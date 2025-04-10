@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Golf Contest</title>
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f7f9fc;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+        }
+        
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .left-panel {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .right-panel {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        select, button {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .CodeMirror {
+            height: 300px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        
+        .success {
+            background-color: #e8f5e9;
+            border-left: 5px solid #4caf50;
+        }
+        
+        .error {
+            background-color: #ffebee;
+            border-left: 5px solid #f44336;
+        }
+        
+        .score-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .score-box {
+            text-align: center;
+            padding: 10px;
+            background: #f1f8fe;
+            border-radius: 4px;
+            flex: 1;
+            margin: 0 5px;
+        }
+        
+        .score-box h3 {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .score-box p {
+            margin: 5px 0 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .question-description {
+            background-color: #f5f7fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .function-signature {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .examples-container {
+            margin-top: 15px;
+        }
+        
+        .example {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .example-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .example-content {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #edf2f7;
+            padding: 5px;
+            border-radius: 2px;
+        }
+        
+        .efficiency-indicator {
+            margin-top: 10px;
+            font-size: 16px;
+            text-align: center;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .info-panel {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .warning-panel {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #fff3e0;
+            border-left: 5px solid #ff9800;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .optimal-solutions {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .optimal-solution {
+            background-color: #f0f8ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            border-left: 3px solid #1976d2;
+        }
+        
+        .optimal-solution pre {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        
+        .optimal-solution h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .optimal-approaches-btn {
+            background-color: #9c27b0;
+            margin-top: 10px;
+        }
+        
+        .optimal-approaches-btn:hover {
+            background-color: #7b1fa2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Code Golf Contest</h1>
+        <p>Write the shortest code possible to solve these programming challenges!</p>
+    </header>
+    
+    <div class="container">
+        <div class="left-panel">
+            <h2>Challenge</h2>
+            
+            <div>
+                <label for="questionSelect">Select Question:</label>
+                <select id="questionSelect">
+                    <option value="">-- Select a question --</option>
+                </select>
+            </div>
+            
+            <div class="question-description" id="questionDescription">
+                Select a question to view its description.
+            </div>
+            
+            <div>
+                <label for="languageSelect">Select Language:</label>
+                <select id="languageSelect">
+                    <option value="">-- Select a language --</option>
+                    <option value="python">Python</option>
+                    <option value="cpp">C++</option>
+                    <option value="java">Java</option>
+                </select>
+            </div>
+            
+            <div class="info-panel">
+                <strong>Note:</strong> Only the implementation inside the <code>solution</code> function will be counted for scoring.
+                All necessary imports, namespaces, and the main function are already included in the template.
+            </div>
+            
+            <div class="warning-panel">
+                <strong>Important:</strong> Do not change the function name <code>solution</code> or its parameters. 
+                Only modify the implementation inside the function.
+            </div>
+            
+            <div id="examplesContainer" class="examples-container" style="display: none;">
+                <!-- Examples will go here -->
+            </div>
+            
+            <div>
+                <label for="codeEditor">Your Code:</label>
+                <div id="codeEditorContainer">
+                    <textarea id="codeEditor"></textarea>
+                </div>
+            </div>
+            
+            <button id="submitBtn">Submit Solution</button>
+        </div>
+        
+        <div class="right-panel">
+            <h2>Results</h2>
+            
+            <div id="resultContainer" style="display: none;">
+                <div id="resultMessage" class="result"></div>
+                
+                <div class="efficiency-indicator" id="efficiencyIndicator">
+                    Your code is <span id="efficiencyPercentage">0%</span> close to the most optimal solution!
+                </div>
+                
+                <div class="score-container">
+                    <div class="score-box">
+                        <h3>Score</h3>
+                        <p id="scoreValue">-</p>
+                    </div>
+                    <div class="score-box">
+                        <h3>Function Body Characters</h3>
+                        <p id="charCount">-</p>
+                    </div>
+                    <div class="score-box">
+                        <h3>Max Score</h3>
+                        <p id="maxScore">100</p>
+                    </div>
+                </div>
+                
+                <button id="optimalApproachesBtn" class="optimal-approaches-btn" style="display: none;">Show Optimal Approaches</button>
+                
+                <div id="optimalSolutions" class="optimal-solutions">
+                    <h3>Optimal Solution Approaches</h3>
+                    <p>Here are some of the most efficient approaches to solve this problem:</p>
+                    
+                    <div id="pythonOptimal" class="optimal-solution">
+                        <h4>Python</h4>
+                        <pre id="pythonOptimalCode"></pre>
+                    </div>
+                    
+                    <div id="cppOptimal" class="optimal-solution">
+                        <h4>C++</h4>
+                        <pre id="cppOptimalCode"></pre>
+                    </div>
+                    
+                    <div id="javaOptimal" class="optimal-solution">
+                        <h4>Java</h4>
+                        <pre id="javaOptimalCode"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- CodeMirror JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+    
+    <script>
+        // DOM Elements
+        const questionSelect = document.getElementById('questionSelect');
+        const questionDescription = document.getElementById('questionDescription');
+        const examplesContainer = document.getElementById('examplesContainer');
+        const languageSelect = document.getElementById('languageSelect');
+        const codeEditorContainer = document.getElementById('codeEditorContainer');
+        const codeEditorTextarea = document.getElementById('codeEditor');
+        const submitBtn = document.getElementById('submitBtn');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultMessage = document.getElementById('resultMessage');
+        const scoreValue = document.getElementById('scoreValue');
+        const charCount = document.getElementById('charCount');
+        const efficiencyIndicator = document.getElementById('efficiencyIndicator');
+        const efficiencyPercentage = document.getElementById('efficiencyPercentage');
+        const optimalApproachesBtn = document.getElementById('optimalApproachesBtn');
+        const optimalSolutions = document.getElementById('optimalSolutions');
+        const pythonOptimalCode = document.getElementById('pythonOptimalCode');
+        const cppOptimalCode = document.getElementById('cppOptimalCode');
+        const javaOptimalCode = document.getElementById('javaOptimalCode');
+        
+        // Define optimal solutions for each problem
+        const optimalSolutionsData = {
+            "q1": {
+                "title": "Fibonacci Number",
+                "python": "# Iterative approach (most efficient)\ndef solution(n):\n    if n <= 1:\n        return n\n    a, b = 0, 1\n    for _ in range(1, n):\n        a, b = b, a + b\n    return b",
+                "cpp": "// Iterative approach (most efficient)\nint solution(int n) {\n    if (n <= 1) return n;\n    int a = 0, b = 1;\n    for (int i = 1; i < n; i++) {\n        int temp = a;\n        a = b;\n        b += temp;\n    }\n    return b;\n}",
+                "java": "// Iterative approach (most efficient)\npublic static int solution(int n) {\n    if (n <= 1) return n;\n    int a = 0, b = 1;\n    for (int i = 1; i < n; i++) {\n        int temp = a;\n        a = b;\n        b += temp;\n    }\n    return b;\n}"
+            },
+            "q2": {
+                "title": "Factorial",
+                "python": "# Iterative approach (most efficient)\ndef solution(n):\n    result = 1\n    for i in range(1, n+1):\n        result *= i\n    return result",
+                "cpp": "// Iterative approach (most efficient)\nint solution(int n) {\n    int result = 1;\n    for (int i = 1; i <= n; i++)\n        result *= i;\n    return result;\n}",
+                "java": "// Iterative approach (most efficient)\npublic static int solution(int n) {\n    int result = 1;\n    for (int i = 1; i <= n; i++)\n        result *= i;\n    return result;\n}"
+            }
+        };
+        
+        // Initialize CodeMirror
+        let codeEditor;
+        let currentLanguage = '';
+        let currentQuestion = '';
+        
+        function initCodeEditor(mode) {
+            // If editor already exists, destroy it
+            if (codeEditor) {
+                codeEditor.toTextArea();
+            }
+            
+            // Create new editor with appropriate mode
+            codeEditor = CodeMirror.fromTextArea(codeEditorTextarea, {
+                lineNumbers: true,
+                theme: 'monokai',
+                mode: mode,
+                indentUnit: 4,
+                indentWithTabs: true,
+                matchBrackets: true
+            });
+        }
+        
+        // Function to get appropriate mode based on language
+        function getEditorMode(language) {
+            switch (language) {
+                case 'python':
+                    return 'python';
+                case 'cpp':
+                    return 'text/x-c++src';
+                case 'java':
+                    return 'text/x-java';
+                default:
+                    return 'text/plain';
+            }
+        }
+        
+        // API URL - change this if needed
+        const API_URL = 'http://localhost:5000';
+        
+        // Load questions from API
+        async function loadQuestions() {
+            try {
+                const response = await fetch(`${API_URL}/questions`);
+                const questions = await response.json();
+                
+                // Populate question dropdown
+                Object.keys(questions).forEach(qid => {
+                    const option = document.createElement('option');
+                    option.value = qid;
+                    option.textContent = `${qid}: ${questions[qid].description}`;
+                    questionSelect.appendChild(option);
+                });
+                
+                // Store questions data in a global variable for later use
+                window.questionsData = questions;
+            } catch (error) {
+                console.error('Error loading questions:', error);
+                alert('Failed to load questions. Please make sure the API server is running.');
+            }
+        }
+        
+        // Update question description and examples
+        function updateQuestionInfo() {
+            const questionId = questionSelect.value;
+            if (!questionId || !window.questionsData) return;
+            
+            currentQuestion = questionId;
+            const question = window.questionsData[questionId];
+            questionDescription.textContent = question.description;
+            
+            // Update examples
+            examplesContainer.style.display = 'block';
+            examplesContainer.innerHTML = '<h3>Examples:</h3>';
+            
+            if (question.test_cases && question.test_cases.length > 0) {
+                question.test_cases.forEach((testCase, index) => {
+                    const exampleEl = document.createElement('div');
+                    exampleEl.className = 'example';
+                    
+                    exampleEl.innerHTML = `
+                        <div class="example-title">Example ${index + 1}:</div>
+                        <div class="example-content">
+                            <strong>Input:</strong> ${testCase.input}<br>
+                            <strong>Expected Output:</strong> ${testCase.expected_output}
+                        </div>
+                    `;
+                    
+                    examplesContainer.appendChild(exampleEl);
+                });
+            } else {
+                examplesContainer.innerHTML += '<p>No examples available.</p>';
+            }
+            
+            // If language is already selected, update code template
+            if (currentLanguage) {
+                updateCodeTemplate();
+            }
+        }
+        
+        // Handle language change
+        function handleLanguageChange() {
+            const language = languageSelect.value;
+            if (!language) return;
+            
+            currentLanguage = language;
+            
+            // Update code editor mode
+            initCodeEditor(getEditorMode(language));
+            
+            // Update code template if question is selected
+            if (currentQuestion) {
+                updateCodeTemplate();
+            }
+        }
+        
+        // Update code template based on selected question and language
+        function updateCodeTemplate() {
+            if (!currentQuestion || !currentLanguage || !window.questionsData) return;
+            
+            const question = window.questionsData[currentQuestion];
+            
+            // Get boilerplate code for the selected language
+            if (question.boilerplate && question.boilerplate[currentLanguage]) {
+                codeEditor.setValue(question.boilerplate[currentLanguage]);
+            }
+        }
+        
+        // Show optimal solutions
+        function showOptimalSolutions() {
+            if (!currentQuestion || !optimalSolutionsData[currentQuestion]) return;
+            
+            const solutions = optimalSolutionsData[currentQuestion];
+            
+            // Update solution code displays
+            pythonOptimalCode.textContent = solutions.python;
+            cppOptimalCode.textContent = solutions.cpp;
+            javaOptimalCode.textContent = solutions.java;
+            
+            // Show the solutions container
+            optimalSolutions.style.display = 'block';
+        }
+        
+        // Submit code to API
+        async function submitCode() {
+            const code = codeEditor.getValue();
+            const language = languageSelect.value;
+            const questionId = questionSelect.value;
+            
+            // Validate inputs
+            if (!code) {
+                alert('Please enter your code');
+                return;
+            }
+            
+            if (!language) {
+                alert('Please select a language');
+                return;
+            }
+            
+            if (!questionId) {
+                alert('Please select a question');
+                return;
+            }
+            
+            // Verify solution function exists
+            const checkPattern = {
+                'python': /def\s+solution\s*\(/,
+                'cpp': /int\s+solution\s*\(/,
+                'java': /public\s+static\s+int\s+solution\s*\(/
+            };
+            
+            if (!checkPattern[language].test(code)) {
+                alert('Your code must include the solution function with the correct signature. Please do not modify the function name or parameters.');
+                return;
+            }
+            
+            // Disable button during submission
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            try {
+                const response = await fetch(`${API_URL}/submit`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        code,
+                        language,
+                        questionId
+                    })
+                });
+                
+                const result = await response.json();
+                displayResults(result);
+            } catch (error) {
+                console.error('Error submitting code:', error);
+                alert('Failed to submit code. Please make sure the API server is running.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Solution';
+            }
+        }
+        
+        // Display results
+        function displayResults(result) {
+            resultContainer.style.display = 'block';
+            
+            if (result.passed) {
+                resultMessage.className = 'result success';
+                resultMessage.textContent = 'All test cases passed! 🎉';
+                
+                // Show efficiency indicator
+                efficiencyIndicator.style.display = 'block';
+                efficiencyPercentage.textContent = `${result.score.toFixed(4)}%`;
+                
+                // Show optimal approaches button
+                optimalApproachesBtn.style.display = 'block';
+                // Hide solutions initially
+                optimalSolutions.style.display = 'none';
+            } else {
+                resultMessage.className = 'result error';
+                resultMessage.textContent = result.details || 'Your solution failed.';
+                efficiencyIndicator.style.display = 'none';
+                optimalApproachesBtn.style.display = 'none';
+                optimalSolutions.style.display = 'none';
+            }
+            
+            scoreValue.textContent = result.score.toFixed(4);
+            charCount.textContent = result.char_count;
+        }
+        
+        // Event Listeners
+        questionSelect.addEventListener('change', updateQuestionInfo);
+        languageSelect.addEventListener('change', handleLanguageChange);
+        submitBtn.addEventListener('click', submitCode);
+        optimalApproachesBtn.addEventListener('click', showOptimalSolutions);
+        
+        // Initialize
+        loadQuestions();
+        initCodeEditor('text/plain');
+    </script>
+</body>
+</html> 
